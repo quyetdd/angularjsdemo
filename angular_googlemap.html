@@ -4,15 +4,15 @@
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <style>
 #map {
-    height:420px;
-    width:600px;
+    height:350px;
+    width:100%;
 }
 </style>
 <body>
-<div ng-app="mapsApp" ng-controller="MapCtrl">
+<div ng-app="matomeMaps" ng-controller="MapCtrl">
      <div id="panel">
-      <input id="address" type="textbox" value="Sydney, NSW">
-      <input type="button" value="Geocode" ng-click="openInfoWindow($event)">
+      <input id="address" type="textbox" value="My Dinh">
+      <input type="button" value="Localtion" ng-click="openLocation($event)">
     </div>
     <div id="map"></div>
 
@@ -20,57 +20,72 @@
 </body>
 <script type="text/javascript">
 //Angular App Module and Controller
-angular.module('mapsApp', [])
+angular.module('matomeMaps', [])
 .controller('MapCtrl', function ($scope) {
-  var latlng = new google.maps.LatLng(51.4975941, -0.0803232);
+  var latlng = new google.maps.LatLng(21.0274033, 105.77441650000003);
     var map = new google.maps.Map(document.getElementById('map'), {
         center: latlng,
         zoom: 8,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
     var geocoder = new google.maps.Geocoder();
+   // var markersArray = [];
+
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
         title: 'Set lat/lon values for this property',
         draggable: true
     });
-    google.maps.event.addListener(marker, 'dragend', function(a) {
-        console.log(a);
-        var div = document.createElement('div');
-        div.innerHTML = a.latLng.lat().toFixed(4) + ', ' + a.latLng.lng().toFixed(4);
-        document.getElementsByTagName('body')[0].appendChild(div);
+          google.maps.event.addListener(marker, 'dragend', function(a) {
+          console.log(a);
+          var div = document.createElement('div');
+          div.innerHTML = a.latLng.lat() + ', ' + a.latLng.lng();
+          document.getElementsByTagName('body')[0].appendChild(div);
           var objPoint = new google.maps.LatLng( 
-  parseFloat(  a.latLng.lat().toFixed(4) ) , 
-  parseFloat( a.latLng.lng().toFixed(4) ) 
-);
+          parseFloat(  a.latLng.lat() ) , 
+          parseFloat( a.latLng.lng()) 
+       //   markersArray.push(marker);
+          );
 
-// now center the map using the new point //
-
-map.setCenter( objPoint );
+    // now center the map using the new point //
+    map.setCenter( objPoint );
     });
-
-    $scope.openInfoWindow = function(e){
-     
-        e.preventDefault();
+   
+    $scope.openLocation = function(e){     
+          e.preventDefault
+          marker.setMap(null);
           var address = document.getElementById('address').value;
-  geocoder.geocode( { 'address': address}, function(results, status) {
-    if (status == google.maps.GeocoderStatus.OK) {
-      map.setCenter(results[0].geometry.location);
-      marker = new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location,
-                  draggable: true
-      });
-        
-       //  alert('Geocode was not successful for the following reason: ' + results[0].geometry.location);
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-    }
+          geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              map.setCenter(results[0].geometry.location);
+              marker = new google.maps.Marker({
+                  map: map,
+                  position: results[0].geometry.location,
+                  title: 'Set lat/lon with button click property',
+                          draggable: true
+              });
 
+              //begin listener
+               google.maps.event.addListener(marker, 'dragend', function(a) {
+                        var div = document.createElement('div');
+                        div.innerHTML = a.latLng.lat() + ', ' + a.latLng.lng();
+                        document.getElementsByTagName('body')[0].appendChild(div);
+                        var objPoint = new google.maps.LatLng( 
+                        parseFloat(  a.latLng.lat() ) , 
+                        parseFloat( a.latLng.lng())                     
+                        );   
+                        map.setCenter( objPoint );
+              });
 
+              //end listener
+                 alert('successful for the following reason: ' + results[0].geometry.location);
+            }
+            else {
+              alert('not successful for the following reason: ' + status);
+             }
+});
+}
 });
 </script>
 </html>
