@@ -1,0 +1,37 @@
+<htm>
+    <head><title>example google map</title></head>
+</htm><script data-require="angular.js@1.2.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.17/angular.min.js" data-semver="1.2.17"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="app.js"></script>
+<style>
+.map {
+    height:250px;
+    width:100%;
+}
+table{
+  width: 100%
+}
+</style>
+<body>
+<div ng-app="matomeMaps" ng-controller="MapCtrl">
+
+      {{place}}
+      <table ng-repeat="(key, data) in objKey track by $index">
+    <tr>
+      <td><input type="checkbox" />{{key}} {{$index+1}}</td><td ng-click="locationF($event,$index)"><a href="">{{location}}</a>
+    </td><td ng-click="chainstoreF($event,$index)"><a href="">{{chainstore}}</a></td>
+    </tr>
+     <td colspan="3"><div id="map{{$index}}" class="map" ng-show="locationF"></div>
+      <div><span ng-click="selectLocation($event,$index)">{{pin}}</span>   <span ng-click="selectCenter($event,$index)">{{center}}}</span></div>
+    </td>
+    <tr>
+    </tr>
+  </table><br />
+    <div id="panel">
+      Nếu không có trong những địa điểm ở trên, hãy chỉ định địa điểm mới. <br />
+      <input id="address" type="textbox" value="My Dinh">
+      <input type="button" value="Tìm kiếm" placeholder="địa điểm" ng-click="openLocation($event)">
+    </div>   
+  </div>
+</body>
+</html>
