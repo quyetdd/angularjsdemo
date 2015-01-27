@@ -1,6 +1,6 @@
 
 
-var model;
+   var model;
 
 var todo = angular.module('matomeMaps', []);
 
@@ -16,12 +16,11 @@ var todo = angular.module('matomeMaps', []);
   $scope.location="Chỉ định địa điểm";
   $scope.chainstore="Đăng ký chain store";
   
-   
+
    $scope.locationF = function(e,$index){  
     
       var latlng = new google.maps.LatLng(21.0274033, 105.77441650000003);
-      var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
-
+      var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';      
       var map = new google.maps.Map(document.getElementById('map'+$index), {
           center: latlng,
           zoom: 8,
@@ -52,6 +51,10 @@ var todo = angular.module('matomeMaps', []);
            icon: iconBase + 'schools_maps.png'
       });
               map.setCenter( latlng );
+                 model[$index] = {
+                    lat:latlng.lat(),
+                    lng:latlng.lng()
+                 };
             });
 
             google.maps.event.addListener(marker, 'dragend', function(a) {
@@ -62,15 +65,19 @@ var todo = angular.module('matomeMaps', []);
             parseFloat(  a.latLng.lat() ) , 
             parseFloat( a.latLng.lng()) 
             );   
+            model[$index] = {
+              lat:a.latLng.lat(),
+              lng:a.latLng.lng()
+            };
       });
   
 
    };
     $scope.selectLocation = function(e,$index){  
-    alert($index);
+    alert(model[$index]);
    };
     $scope.selectCenter = function(e,$index){  
-     alert($index);
+     alert(model[$index]);
    };
    $scope.chainstoreF = function(e,$index){  
     alert($index);
