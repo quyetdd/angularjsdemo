@@ -178,38 +178,5 @@ var todo = angular.module('matomeMaps', []);
    $scope.chainstoreF = function($event,$index){  
     alert($index);
    };
-    $scope.openLocation = function($event,$index){     
-          e.preventDefault
-          marker.setMap(null);
-          var address = document.getElementById('address').value;
-          geocoder.geocode( { 'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              map.setCenter(results[0].geometry.location);
-              marker = new google.maps.Marker({
-                  map: map,
-                  position: results[0].geometry.location,
-                  title: 'Set lat/lon with button click property',
-                          draggable: true
-              });
 
-              //begin listener
-               google.maps.event.addListener(marker, 'dragend', function(a) {
-                        var div = document.createElement('div');
-                        div.innerHTML = a.latLng.lat() + ', ' + a.latLng.lng();
-                        document.getElementsByTagName('body')[0].appendChild(div);
-                        var objPoint = new google.maps.LatLng( 
-                        parseFloat(  a.latLng.lat() ) , 
-                        parseFloat( a.latLng.lng())                     
-                        );   
-                        map.setCenter( objPoint );
-              });
-
-              //end listener
-                 alert('successful for the following reason: ' + results[0].geometry.location);
-            }
-            else {
-              alert('not successful for the following reason: ' + status);
-             }
-});
-}
 });
