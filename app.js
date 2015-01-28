@@ -2,7 +2,7 @@
 
 var model =[];
 var addressObj ;
-var todo = angular.module('matomeMaps', ["checklist-model"]);
+var todo = angular.module('matomeMaps', []);
 
   todo.controller('MapCtrl', function ($scope,$http) {
     $http.get("api_yahoo.json").success(function (data) {
