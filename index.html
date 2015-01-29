@@ -32,29 +32,50 @@ table{
         {{chainstore}}</a>
       </td>
     </tr>
-     <tr hidden="true" id="viewMap{{$index}}" >
+    <tr hidden="true" id="chainstore{{$index}}" >
      <td colspan="3">
-      <div id="map{{$index}}" class="map" ng-show="locationF"></div>
+        <div>Có {{chainstoreCount}} cửa hàng "{{key}}" trên toàn quốc
+            <button id="btnchainstore{{$index}}" ng-click="selectInChainstore($event,$index)">Đăng ký trong chain store</button>
+        </div>
+      </td>
+    </tr>
+     <tr hidden="true" id="viewMap{{$index}}" >
+     <td colspan="3">       
+        <div id="map{{$index}}" class="map"></div>
         <div id="button{{$index}}" >
           <span ng-click="selectLocation($event,$index)">{{pin}}</span>   
           <span ng-click="selectCenter($event,$index)">{{center}}</span>
         </div>
+
     </td>
    
     </tr>
   </table><br />
       <div id="panel" >
-      Nếu không có trong những địa điểm ở trên, hãy chỉ định địa điểm mới.{{customMap}} <br />
+      Nếu không có trong những địa điểm ở trên, hãy chỉ định địa điểm mới <br />
       <input id="address" type="textbox" value="">
-      <input type="button" value="Tìm kiếm" placeholder="địa điểm" ng-click="locationF($event,100)">
+      <input type="button" value="Tìm kiếm" placeholder="địa điểm địa điểm" ng-click="locationF($event,100)">
        <div hidden="true" id="viewMap100" >
-       <div id="map100" class="map"></div>
-        <div id="button100" >
-            <span ng-click="selectLocation($event,100)">{{pin}}</span>   
-            <span ng-click="selectCenter($event,100)">{{center}}</span>
+         <div id="map100" class="map"></div>
+          <div id="button100" >
+              <span ng-click="selectLocation($event,100)">{{pin}}</span>   
+              <span ng-click="selectCenter($event,100)">{{center}}</span>
           </div>
-     </div> 
-     </div>  
+        </div> 
+     </div>  <br />
+     <div id="panel1" >
+      <input id="chainstore" type="textbox" value="">
+      <input type="button" value="Tìm kiếm chainstore" placeholder="địa điểm chainstore" ng-click="locationF($event,100)">
+       <div hidden="true" id="viewchainStore100" >
+         <div id="chainStore100" class="map"></div>
+          <div id="btnchainStore100" >
+              <span ng-click="selectLocation($event,100)">{{pin}}</span>   
+              <span ng-click="selectCenter($event,100)">{{center}}</span>
+          </div>
+        </div> 
+     </div>
+              <br />
+      <button ng-click="pointPlace($event)">Chỉ định địa điểm</button>
   </div>
 </body>
 </html>
