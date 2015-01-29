@@ -3,8 +3,12 @@
 var model =[];
 var addressObj ;
 var todo = angular.module('matomeMaps', []);
+var dataHttp = [];
 
-  todo.controller('MapCtrl', function ($scope,$http) {
+
+//begin controller
+
+  todo.controller('MapCtrl', function ($scope,$http,chainstoreService) {
     $http.get("api_yahoo.json").success(function (data) {
                           var result = [];
                           var i=0;
@@ -59,7 +63,7 @@ var todo = angular.module('matomeMaps', []);
           zoom: 8,
         //  draggable: false,
           streetViewControl: false,
-          navigationControl:true,
+          navigationControl:false,
         //  keyboardShortcuts: false,
         //  disableDoubleClickZoom: true,
           mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -125,12 +129,14 @@ var todo = angular.module('matomeMaps', []);
             });
             }     
             else{
-                 myEl[0].hidden=true;
+                 mymap[0].hidden=true;
                  alert('not successful for the following reason: ' + status);
               }        
             });
    };
-  
+    $scope.pointPlace = function($event){  
+      alert(angular.toJson(model, true));
+    }
     $scope.selectLocation = function($event,$index){  
     var map = document.getElementById('map'+$index);
     var checkboxelement = "#"+"checkbox"+$index;
@@ -154,29 +160,115 @@ var todo = angular.module('matomeMaps', []);
    
    };
     $scope.selectCenter = function($event,$index){  
-    var map = document.getElementById('map'+$index);
-     var checkboxelement = "#"+"checkbox"+$index;
-    var buttonelement = "#"+"button"+$index;
-    var button = angular.element( document.querySelector( buttonelement ) ); 
-    var checkbox = angular.element( document.querySelector( checkboxelement ) ); 
-    if(checkbox!='[]')
-    {
-     checkbox[0].checked=true;
-     model[$index][0]['checked'] = checkbox[0].value;
+      var map = document.getElementById('map'+$index);
+      var checkboxelement = "#"+"checkbox"+$index;
+      var buttonelement = "#"+"button"+$index;
+      var button = angular.element( document.querySelector( buttonelement ) ); 
+      var checkbox = angular.element( document.querySelector( checkboxelement ) ); 
+      if(checkbox!='[]')
+      {
+       checkbox[0].checked=true;
+       model[$index][0]['checked'] = checkbox[0].value;
+      } 
+      else
+      {
+         model[$index][0]['checked'] = true;
+      }
+
+      if(button!='[]')
+       button[0].hidden=true;
+      
+      var staticImage ="http://maps.google.com/maps/api/staticmap?center="+model[$index][0]['lat']+","+model[$index][0]['lng']+"&markers=icon:http://tinyurl.com/2ftvtt6|"+model[$index][0]['lat']+","+model[$index][0]['lng']+"&zoom=15&size=1024x200&sensor=false"
+      map.innerHTML= "<img src='"+staticImage+"'"+"/>";
+   };
+  
+    function applyRemoteData( newdata ) {
+      $scope.dataHttp = newdata;
     } 
-    else
-    {
-       model[$index][0]['checked'] = true;
+
+    $scope.selectInChainstore = function($event,$index){  
+      model[$index][2] = dataHttp[$index].result.itemList.item;      
+      $scope.chainstoreCount = dataHttp[$index].status.hitCount+"(đã đăng ký)";
+       var buttonelement_s = "#"+"btnchainstore"+$index;
+               var button_s = angular.element( document.querySelector( buttonelement_s ) ); 
+               if(button_s!='[]')
+                 button_s[0].hidden=true;
     }
 
-    if(button!='[]')
-     button[0].hidden=true;
+    $scope.chainstoreF = function($event,$index){  
+    //call api navi
+    //var example =  "https://support.e-map.ne.jp/manuals/cgi/misc/sampleurl.cgi?target=searchdke.cgi&prm=%26pos%3D1%26cnt%3D5%26enc%3DUTF8%26tod%3D13%26shk%3D101%26gnr1%3D0000000%26gnr2%3D0000000%26frewd%3D%25e9%259d%2592%25e5%25b1%25b1&outf=xml";
     
-    var staticImage ="http://maps.google.com/maps/api/staticmap?center="+model[$index][0]['lat']+","+model[$index][0]['lng']+"&markers=icon:http://tinyurl.com/2ftvtt6|"+model[$index][0]['lat']+","+model[$index][0]['lng']+"&zoom=15&size=1024x200&sensor=false"
-    map.innerHTML= "<img src='"+staticImage+"'"+"/>";
-   };
-   $scope.chainstoreF = function($event,$index){  
-    alert($index);
+    chainstoreService.getchainStores('get','chainstore.php?id='+$index,'','')
+    .then(
+      function( newdata ) {
+        dataHttp[$index] = newdata;
+          if(dataHttp[$index].status.hitCount>0)
+            {
+              $scope.chainstoreCount = dataHttp[$index].status.hitCount;
+               var buttonelement_s = "#"+"chainstore"+$index;
+               var button_s = angular.element( document.querySelector( buttonelement_s ) ); 
+               if(button_s!='[]')
+                 button_s[0].hidden=false;
+              //view button chainstore
+            }
+        } 
+      );  
+   
+
    };
 
 });
+
+
+
+//begin services
+todo.service("chainstoreService",function( $http, $q ) {
+// Return public API.
+  return({
+  getchainStores: getchainStores
+  });
+// ---
+// PUBLIC METHODS.
+// ---
+//need call API from server for authenticated key form navi
+function getchainStores(method,url,action,name ) {
+  var request = $http({
+                    method: method,
+                    url: url,
+                  //  params: {
+                  //  action: action
+                  //  },
+                  //  data: {
+                  //    name: name
+                  //  }
+                  });
+  return( request.then( handleSuccess, handleError ) );
+}
+
+
+// ---
+// PRIVATE METHODS.
+// ---
+
+function handleError( response ) {
+  // The API response from the server should be returned in a
+  // nomralized format. However, if the request was not handled by the
+  // server (or what not handles properly - ex. server error), then we
+  // may have to normalize it on our end, as best we can.
+  if (
+  ! angular.isObject( response.data ) ||
+  ! response.data.message
+  )  {
+       return( $q.reject( "An unknown error occurred." ) );
+     }
+  // Otherwise, use expected error message.
+   return( $q.reject( response.data.message ) );
+}
+  // I transform the successful response, unwrapping the application data
+  // from the API response payload.
+  function handleSuccess( response ) {
+  return( response.data );
+  }
+}); 
+//end services
